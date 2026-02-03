@@ -18,6 +18,18 @@ const PageTitle = styled.h1`
   color: #333;
 `;
 
+const HelperCard = styled.div`
+  background: linear-gradient(135deg, rgba(74, 108, 247, 0.08), rgba(151, 71, 255, 0.1));
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  color: #3f4b5d;
+
+  strong {
+    color: #1e293b;
+  }
+`;
+
 const TwoColumnLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -146,6 +158,9 @@ const ATSScorer = () => {
       <PageTitle>ATS Score Analyzer</PageTitle>
 
       <Card>
+        <HelperCard>
+          <strong>Tip:</strong> Paste the exact job description so the AI can surface missing keywords and format improvements.
+        </HelperCard>
         <form onSubmit={handleSubmit}>
           <Input
             label="Job Description"

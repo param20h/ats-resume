@@ -7,7 +7,6 @@ import ResumeBuilder from './pages/ResumeBuilder';
 import ATSScorer from './pages/ATSScorer';
 import Preview from './pages/Preview';
 import GlobalStyles from './styles/GlobalStyles';
-import logo from './logo.svg';
 import './App.css';
 
 const AppContainer = styled.div`
