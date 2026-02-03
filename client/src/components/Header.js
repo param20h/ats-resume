@@ -4,12 +4,21 @@ import styled from 'styled-components';
 import { FaFileAlt, FaRobot, FaHome } from 'react-icons/fa';
 
 const HeaderContainer = styled.header`
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
   padding: 1rem 2rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
 `;
 
 const Logo = styled.div`
@@ -31,6 +40,9 @@ const Logo = styled.div`
 const Nav = styled.nav`
   display: flex;
   gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
 `;
 
 const NavLink = styled(Link)`
@@ -55,6 +67,21 @@ const NavLink = styled(Link)`
 
   &:hover::after {
     width: 100%;
+  }
+`;
+
+const CtaButton = styled(Link)`
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, #4a6cf7, #7c4dff);
+  color: #fff;
+  border-radius: 999px;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 18px rgba(74, 108, 247, 0.3);
   }
 `;
 
@@ -83,6 +110,9 @@ const Header = () => {
         >
           <FaRobot /> ATS Scorer
         </NavLink>
+        <CtaButton to="/resume-builder">
+          Build My Resume
+        </CtaButton>
       </Nav>
     </HeaderContainer>
   );

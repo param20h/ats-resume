@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaUser, FaBriefcase, FaGraduationCap, FaLaptopCode, FaPlus, FaTrash } from 'react-icons/fa';
+import { FaUser, FaBriefcase, FaGraduationCap, FaLaptopCode, FaPlus, FaTrash, FaCheckCircle } from 'react-icons/fa';
 import Card from '../components/UI/Card';
 import Input from '../components/UI/Input';
 import Button from '../components/UI/Button';
@@ -17,6 +17,64 @@ const PageTitle = styled.h1`
   font-size: 2rem;
   margin-bottom: 2rem;
   color: #333;
+`;
+
+const Stepper = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`;
+
+const StepItem = styled.button`
+  border: none;
+  background: ${({ active }) => (active ? 'rgba(74, 108, 247, 0.12)' : '#f5f7fb')};
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(74, 108, 247, 0.15);
+  }
+`;
+
+const StepIcon = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${({ completed }) => (completed ? '#4a6cf7' : '#ffffff')};
+  color: ${({ completed }) => (completed ? '#fff' : '#4a6cf7')};
+  border: 1px solid rgba(74, 108, 247, 0.25);
+`;
+
+const StepText = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
+
+const StepLabel = styled.span`
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2f3a4a;
+`;
+
+const StepHint = styled.span`
+  font-size: 0.8rem;
+  color: #6b7280;
 `;
 
 const FormSection = styled.div`
@@ -105,6 +163,18 @@ const ButtonsContainer = styled.div`
   margin-top: 2rem;
 `;
 
+const HelperCard = styled.div`
+  background: linear-gradient(135deg, rgba(74, 108, 247, 0.1), rgba(151, 71, 255, 0.08));
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  color: #3f4b5d;
+
+  strong {
+    color: #2f3a4a;
+  }
+`;
+
 const ResumeBuilder = () => {
   const navigate = useNavigate();
   const {
@@ -119,12 +189,20 @@ const ResumeBuilder = () => {
     removeEducation,
     updateSkills,
     generateResume,
-    resetForm,
     loading
   } = useResume();
 
   const [skillInput, setSkillInput] = useState('');
   const [activeSection, setActiveSection] = useState('personal');
+
+  const steps = [
+    { id: 'personal', label: 'Personal Info', hint: 'Basic details', icon: <FaUser /> },
+    { id: 'experience', label: 'Experience', hint: 'Roles & impact', icon: <FaBriefcase /> },
+    { id: 'education', label: 'Education', hint: 'Degrees & dates', icon: <FaGraduationCap /> },
+    { id: 'skills', label: 'Skills', hint: 'Tools & strengths', icon: <FaLaptopCode /> },
+  ];
+
+  const currentStepIndex = steps.findIndex((step) => step.id === activeSection);
 
   // Handle skill input
   const handleAddSkill = (e) => {
@@ -132,6 +210,12 @@ const ResumeBuilder = () => {
     if (skillInput.trim() && !resumeData.skills.includes(skillInput.trim())) {
       updateSkills([...resumeData.skills, skillInput.trim()]);
       setSkillInput('');
+    }
+  };
+
+  const handleSkillKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleAddSkill(event);
     }
   };
 
@@ -152,10 +236,32 @@ const ResumeBuilder = () => {
     <PageContainer>
       <PageTitle>Create Your Resume</PageTitle>
 
+      <Stepper>
+        {steps.map((step, index) => (
+          <StepItem
+            key={step.id}
+            type="button"
+            active={activeSection === step.id}
+            onClick={() => setActiveSection(step.id)}
+          >
+            <StepIcon completed={index <= currentStepIndex}>
+              {index < currentStepIndex ? <FaCheckCircle /> : step.icon}
+            </StepIcon>
+            <StepText>
+              <StepLabel>{step.label}</StepLabel>
+              <StepHint>{step.hint}</StepHint>
+            </StepText>
+          </StepItem>
+        ))}
+      </Stepper>
+
       <Card>
         <form onSubmit={handleSubmit}>
           {activeSection === 'personal' && (
             <FormSection>
+              <HelperCard>
+                <strong>Pro tip:</strong> Use a headline that mirrors the role you want and keep your summary to 2-3 sentences.
+              </HelperCard>
               <SectionTitle>
                 <FaUser /> Personal Information
               </SectionTitle>
@@ -231,6 +337,9 @@ const ResumeBuilder = () => {
 
           {activeSection === 'experience' && (
             <FormSection>
+              <HelperCard>
+                <strong>Make it measurable:</strong> Start bullets with action verbs and add metrics (impact %, revenue, time saved).
+              </HelperCard>
               <SectionTitle>
                 <FaBriefcase /> Work Experience
               </SectionTitle>
@@ -333,6 +442,9 @@ const ResumeBuilder = () => {
 
           {activeSection === 'education' && (
             <FormSection>
+              <HelperCard>
+                <strong>Highlight relevance:</strong> Include coursework, honors, or projects aligned with your target role.
+              </HelperCard>
               <SectionTitle>
                 <FaGraduationCap /> Education
               </SectionTitle>
@@ -431,29 +543,31 @@ const ResumeBuilder = () => {
 
           {activeSection === 'skills' && (
             <FormSection>
+              <HelperCard>
+                <strong>ATS-friendly:</strong> Mirror the exact keywords and tools listed in the job description.
+              </HelperCard>
               <SectionTitle>
                 <FaLaptopCode /> Skills
               </SectionTitle>
 
               <ChipInput>
-                <form onSubmit={handleAddSkill}>
-                  <FieldRow>
-                    <Input
-                      label="Add Skills"
-                      id="skill"
-                      value={skillInput}
-                      onChange={(e) => setSkillInput(e.target.value)}
-                      placeholder="Enter a skill and press Enter"
-                    />
-                    <Button
-                      type="submit"
-                      onClick={handleAddSkill}
-                      style={{ alignSelf: 'flex-end' }}
-                    >
-                      Add Skill
-                    </Button>
-                  </FieldRow>
-                </form>
+                <FieldRow>
+                  <Input
+                    label="Add Skills"
+                    id="skill"
+                    value={skillInput}
+                    onChange={(e) => setSkillInput(e.target.value)}
+                    onKeyDown={handleSkillKeyDown}
+                    placeholder="Enter a skill and press Enter"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleAddSkill}
+                    style={{ alignSelf: 'flex-end' }}
+                  >
+                    Add Skill
+                  </Button>
+                </FieldRow>
 
                 <ChipContainer>
                   {resumeData.skills.map((skill, index) => (
